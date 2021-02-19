@@ -1,4 +1,5 @@
 module shell;
+import builtins;
 import std.stdio;
 import core.stdc.stdlib;
 import std.process;
@@ -33,7 +34,7 @@ void parse_args(string args)
     }
 }
 
-int execute_command(string command)
+int spawn_command(string command)
 {
 
     string[] command_array = command.split(" ");
@@ -42,8 +43,6 @@ int execute_command(string command)
 
     pid = fork();
 
-    writeln(command_array);
-    
     /* Child process */
     if (pid == 0)
     {
@@ -52,16 +51,16 @@ int execute_command(string command)
         {
             perror("dsh");
         }
-	
+
         exit(EXIT_FAILURE);
     }
-    
+
     else if (pid < 0)
     {
         /* Error forking */
         perror("dsh");
     }
-    
+
     else
     {
         /* Parent process */
@@ -70,7 +69,35 @@ int execute_command(string command)
             wait_pid = waitpid(pid, &status, WUNTRACED);
         } while (!WIFEXITED(status) && !WIFSIGNALED(status));
     }
-    
+
+    return 1;
+}
+
+int execute_command(string args)
+{
+
+    string[] command = args.split(" ");
+
+    if (command[0] == null)
+    {
+        return 1;
+    }
+    switch (command[0])
+    {
+      
+    case "cd":
+        builtins.cd(command);
+        break;
+	
+    case "exit":
+        builtins.exit(command);
+	return 0;
+        break;
+	
+    default:
+        return spawn_command(args);
+        break;
+    }
     return 1;
 }
 
@@ -83,17 +110,26 @@ void prompt()
     do
     {
 
+        /* Take the prompt from the PROMPT environment variable, if set */
         if (environment.get("PROMPT"))
         {
             prompt = environment["PROMPT"];
         }
+
+        /* Use a default prompt */
         else
         {
             prompt = "$ ";
         }
-	
+
+        /* Print out the prompt */
         write(prompt);
+
+        /* Read the next command to execute */
         readf("%s\n", &command);
+
+        /* Execute it */
+
         status = execute_command(command);
     } while (status);
 }

@@ -1,5 +1,5 @@
 DC=dmd
-OBJS= src/shell.o src/main.o
+OBJS= src/builtins.o src/shell.o src/main.o
 BIN=dsh
 FLAGS=-Isrc/
 all: $(BIN)
