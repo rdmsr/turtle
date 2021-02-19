@@ -1,11 +1,11 @@
 DC=dmd
 OBJS= src/shell.o src/main.o
-BIN=main
+BIN=dsh
 FLAGS=-Isrc/
 all: $(BIN)
 
-main: $(OBJS)
-	$(DC) $(FLAGS) $(OBJS) -of=main
+dsh: $(OBJS)
+	$(DC) $(FLAGS) $(OBJS) -of=$(BIN)
 %.o : %.d	
 	$(DC) $(FLAGS) -c $< -of=$@
 clean:

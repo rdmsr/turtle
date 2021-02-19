@@ -16,10 +16,18 @@ void parse_args(string args)
         writeln("DSH -- the D shell, V0.0.1 copyright (c) Abb1x 2021");
         break;
     }
+    case "--help":
+    case "-h":
+    {
+
+        writeln("Usage: dsh [OPTION]");
+        writeln("-v, --version: Shows the current version");
+        break;
+    }
 
     default:
     {
-        writeln("Unknown command");
+        writeln("Unknown command, run dsh --help to get a list of commands");
         break;
     }
     }
@@ -34,8 +42,8 @@ int execute_command(string command)
 
     pid = fork();
 
-
     writeln(command_array);
+    
     /* Child process */
     if (pid == 0)
     {
@@ -44,13 +52,16 @@ int execute_command(string command)
         {
             perror("dsh");
         }
+	
         exit(EXIT_FAILURE);
     }
+    
     else if (pid < 0)
     {
         /* Error forking */
         perror("dsh");
     }
+    
     else
     {
         /* Parent process */
@@ -59,13 +70,14 @@ int execute_command(string command)
             wait_pid = waitpid(pid, &status, WUNTRACED);
         } while (!WIFEXITED(status) && !WIFSIGNALED(status));
     }
+    
     return 1;
 }
 
 void prompt()
 {
 
-    string command;
+    string command, prompt;
 
     int status;
     do
@@ -73,13 +85,15 @@ void prompt()
 
         if (environment.get("PROMPT"))
         {
-            write(environment["PROMPT"]);
+            prompt = environment["PROMPT"];
         }
         else
         {
-            write("$ ");
+            prompt = "$ ";
         }
-        readf("%s\n",&command);
+	
+        write(prompt);
+        readf("%s\n", &command);
         status = execute_command(command);
     } while (status);
 }
