@@ -5,6 +5,7 @@
 #include <readline/readline.h>
 #include <shell/lisp.h>
 #include <shell/shell.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
@@ -20,8 +21,7 @@ char *builtins[] = {
     "help",
     "exit"};
 
-char *prompt;
-
+bool failed = false;
 int (*builtin_funcs[])(char **) = {&builtin_cd, &builtin_help, &builtin_exit};
 
 int num_builtins()
@@ -109,8 +109,8 @@ int spawn_command(char *command)
     command_array = parse_string(buffer);
 
     pid_t pid, wait_pid;
-    int status;
 
+    int status = 0;
     pid = fork();
 
     /* Child process */
@@ -119,14 +119,11 @@ int spawn_command(char *command)
 
         if (execvp(command_array[0], command_array) == -1)
         {
-            if (lisp_get_var("failed-prompt"))
-            {
-                prompt = lisp_get_var("failed-prompt");
-            }
+
             perror("turtle");
         }
 
-        return EXIT_FAILURE;
+        exit(EXIT_FAILURE);
     }
 
     else if (pid < 0)
@@ -137,12 +134,19 @@ int spawn_command(char *command)
 
     else
     {
-        /* Parent process */
         do
         {
             wait_pid = waitpid(pid, &status, WUNTRACED);
         } while (!WIFEXITED(status) && !WIFSIGNALED(status));
     }
+
+    if (status > 0)
+    {
+        failed = true;
+    }
+
+    else
+        failed = false;
 
     return 1;
 }
@@ -224,7 +228,7 @@ char *parse_prompt(char *string)
 void make_prompt()
 {
 
-    char *command = NULL;
+    char *command = NULL, *prompt;
     int status;
     char hist_file[1024];
     char *temp = getenv("HOME");
@@ -233,7 +237,7 @@ void make_prompt()
     strcat(hist_file, "/.turtle_history");
 
     read_history(hist_file);
-    
+
     /* Take the scheme prompt variable if set */
     if (lisp_get_var("prompt"))
     {
@@ -245,27 +249,36 @@ void make_prompt()
     {
         prompt = "λ ";
     }
-    
+
     do
     {
 
         if (write_history(hist_file) != 0)
             perror("turtle");
 
-        /* Read the next command to execute */
-        command = readline(prompt);
-
-        /* Take the scheme prompt variable if set */
-        if (lisp_get_var("prompt"))
+        if (failed)
         {
-            prompt = lisp_get_var("prompt");
+            if (lisp_get_var("failed-prompt"))
+            {
+                prompt = lisp_get_var("failed-prompt");
+            }
         }
-
-        /* Use a default prompt */
         else
         {
-            prompt = "λ ";
+            /* Take the scheme prompt variable if set */
+            if (lisp_get_var("prompt"))
+            {
+                prompt = lisp_get_var("prompt");
+            }
+
+            /* Use a default prompt */
+            else
+            {
+                prompt = "λ ";
+            }
         }
+        /* Read the next command to execute */
+        command = readline(prompt);
 
         if (command && *command)
         {
@@ -274,9 +287,9 @@ void make_prompt()
 
             /* Execute it */
             status = execute_command(command);
-        }
 
-        free(command);
+            free(command);
+        }
 
     } while (status);
 }
