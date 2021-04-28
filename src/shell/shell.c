@@ -188,26 +188,21 @@ void str_replace(char *target, const char *needle, const char *replacement)
     {
         const char *p = strstr(tmp, needle);
 
-        // walked past last occurrence of needle; copy remaining part
         if (p == NULL)
         {
             strcpy(insert_point, tmp);
             break;
         }
 
-        // copy part before needle
         memcpy(insert_point, tmp, p - tmp);
         insert_point += p - tmp;
 
-        // copy replacement string
         memcpy(insert_point, replacement, repl_len);
         insert_point += repl_len;
 
-        // adjust pointers, move on
         tmp = p + needle_len;
     }
 
-    // write altered string back to target
     strcpy(target, buffer);
 }
 
