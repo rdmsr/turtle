@@ -4,7 +4,7 @@ CC = clang
 SRCS := $(shell find $(SRC_DIRS) -name *.c)
 OBJS := $(addsuffix .o,$(basename $(SRCS)))
 
-CFLAGS ?=  -std=gnu99 -g -Wall -Wextra -Wno-unused-result -Werror -Isrc/ `pkg-config --cflags guile-2.2`
+CFLAGS ?= -ansi  -g -Wall -Wextra -Wno-unused-result -Werror -Wno-unused-function -Isrc/ `pkg-config --cflags guile-2.2`
 LDLIBS = -lreadline `pkg-config --libs guile-2.2`
 %.o: %.c
 	@echo [ CC ] $<
