@@ -19,3 +19,9 @@ Here is the default configuration:
 ```
 
 ![image](https://user-images.githubusercontent.com/54687179/116449836-96608c00-a828-11eb-8f72-9c69e0378b3d.png)
+
+
+## Building
+You need guile and readline for this shell to work.
+
+Then run `make && make install`
