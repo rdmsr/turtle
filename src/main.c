@@ -13,18 +13,17 @@ int main(int argc, char *argv[])
 
     char rc_file[1024];
     char *temp = getenv("HOME");
-    
+
     strcpy(rc_file, temp);
     strcat(rc_file, "/.turtlerc.scm");
-
-    scm_c_primitive_load(rc_file);
-
-    scm_c_use_module("turtlerc");
 
     using_history();
 
     if (argc == 1)
     {
+        scm_c_primitive_load(rc_file);
+
+        scm_c_use_module("turtlerc");
         make_prompt();
     }
     else

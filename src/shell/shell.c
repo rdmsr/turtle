@@ -77,7 +77,7 @@ void parse_args(char *arg)
 
     if (strcmp(arg, "--version") == 0 || strcmp(arg, "-v") == 0)
     {
-        printf("Turtle -- lispy shell, V0.0.1 copyright (c) Abb1x 2021\n");
+        printf("Turtle V0.0.12\n");
     }
 }
 

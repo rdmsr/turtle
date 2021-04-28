@@ -16,6 +16,7 @@ $(TARGET): $(OBJS)
 
 install:
 	cp .turtlerc.scm ~
+	cp turtle /usr/local/bin
 .PHONY: clean
 clean:
 	$(RM) $(TARGET) $(OBJS) 
