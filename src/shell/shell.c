@@ -143,25 +143,30 @@ int spawn_command(char *command)
 
 int execute_command(char *command)
 {
-    int i;
 
-    char buffer[strlen(command)];
-
-    strcpy(buffer, command);
-
-    char **command_array = NULL;
-
-    command_array = parse_string(buffer);
-
-    for (i = 0; i < num_builtins(); i++)
+    if (command)
     {
-        if (strcmp(command_array[0], builtins[i]) == 0)
-        {
-            return (*builtin_funcs[i])(command_array);
-        }
-    }
+        int i;
 
-    return spawn_command(command);
+        char buffer[strlen(command)];
+
+        strcpy(buffer, command);
+
+        char **command_array = NULL;
+
+        command_array = parse_string(buffer);
+
+        for (i = 0; i < num_builtins(); i++)
+        {
+            if (strcmp(command_array[0], builtins[i]) == 0)
+            {
+                return (*builtin_funcs[i])(command_array);
+            }
+        }
+
+        return spawn_command(command);
+    }
+    return -1;
 }
 
 void str_replace(char *target, const char *needle, const char *replacement)
@@ -205,11 +210,10 @@ char *parse_prompt(char *string)
     char *buffer = malloc(sizeof(char *));
     char *dir = getenv("PWD");
 
-    
     strcpy(buffer, string);
 
     str_replace(buffer, "{user}", getenv("USER"));
-    str_replace(buffer, "{directory}",dir);
+    str_replace(buffer, "{directory}", dir);
     printf("%s", dir);
 
     return buffer;
@@ -222,11 +226,10 @@ void prompt()
     int status;
     char hist_file[1024];
     char *temp = getenv("HOME");
-    
+
     strcpy(hist_file, temp);
     strcat(hist_file, "/.turtle_history");
 
-    
     read_history(hist_file);
 
     /* Take the scheme prompt variable if set */
@@ -243,7 +246,7 @@ void prompt()
 
     do
     {
-	
+
         if (write_history(hist_file) != 0)
             perror("turtle");
 
@@ -252,10 +255,14 @@ void prompt()
         /* Read the next command to execute */
         command = readline(prompt);
 
-        add_history(command);
+        if (command && *command)
+        {
+            /* Add to history */
+            add_history(command);
 
-        /* Execute it */
-        status = execute_command(command);
+            /* Execute it */
+            status = execute_command(command);
+        }
 
         free(command);
 
