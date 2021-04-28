@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 
     if (argc == 1)
     {
-        prompt();
+        make_prompt();
     }
     else
         parse_args(argv[1]);

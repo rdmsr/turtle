@@ -20,6 +20,8 @@ char *builtins[] = {
     "help",
     "exit"};
 
+char *prompt;
+
 int (*builtin_funcs[])(char **) = {&builtin_cd, &builtin_help, &builtin_exit};
 
 int num_builtins()
@@ -117,10 +119,14 @@ int spawn_command(char *command)
 
         if (execvp(command_array[0], command_array) == -1)
         {
+            if (lisp_get_var("failed-prompt"))
+            {
+                prompt = lisp_get_var("failed-prompt");
+            }
             perror("turtle");
         }
 
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
     else if (pid < 0)
@@ -166,6 +172,7 @@ int execute_command(char *command)
 
         return spawn_command(command);
     }
+
     return -1;
 }
 
@@ -219,10 +226,10 @@ char *parse_prompt(char *string)
     return buffer;
 }
 
-void prompt()
+void make_prompt()
 {
 
-    char *command = NULL, *prompt;
+    char *command = NULL;
     int status;
     char hist_file[1024];
     char *temp = getenv("HOME");
@@ -231,7 +238,7 @@ void prompt()
     strcat(hist_file, "/.turtle_history");
 
     read_history(hist_file);
-
+    
     /* Take the scheme prompt variable if set */
     if (lisp_get_var("prompt"))
     {
@@ -243,17 +250,27 @@ void prompt()
     {
         prompt = "λ ";
     }
-
+    
     do
     {
 
         if (write_history(hist_file) != 0)
             perror("turtle");
 
-        /* spawn_prompt(prompt); */
-
         /* Read the next command to execute */
         command = readline(prompt);
+
+        /* Take the scheme prompt variable if set */
+        if (lisp_get_var("prompt"))
+        {
+            prompt = lisp_get_var("prompt");
+        }
+
+        /* Use a default prompt */
+        else
+        {
+            prompt = "λ ";
+        }
 
         if (command && *command)
         {

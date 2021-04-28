@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 void parse_args(char* arg);
-void prompt();
+void make_prompt();
 
 
 #endif
