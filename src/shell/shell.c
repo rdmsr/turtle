@@ -232,10 +232,18 @@ void parse_prompt(char *str, char *format)
             case 'd':
             {
                 char cwd[256];
-		getcwd(cwd, sizeof(cwd));
+                getcwd(cwd, sizeof(cwd));
                 strcat(str, cwd);
-                str_replace(str, getenv("HOME"), "~");
-                position += strlen(cwd) - (strlen(getenv("HOME")) - 1);
+
+                if (strstr(str, getenv("HOME")))
+                {
+
+                    str_replace(str, getenv("HOME"), "~");
+                    position += strlen(cwd) - (strlen(getenv("HOME")) - 1);
+                }
+                else
+                    position += strlen(cwd);
+
                 break;
             }
 
