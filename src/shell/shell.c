@@ -1,4 +1,5 @@
 
+#define _DEFAULT_SOURCE
 #include <stdio.h>
 
 #include <readline/history.h>
@@ -210,25 +211,64 @@ void str_replace(char *target, const char *needle, const char *replacement)
     strcpy(target, buffer);
 }
 
-char *parse_prompt(char *string)
+void parse_prompt(char *str, char *format)
 {
 
-    char *buffer = malloc(sizeof(char *));
-    char *dir = getenv("PWD");
+    int position = 0;
 
-    strcpy(buffer, string);
+    while (*format)
+    {
 
-    str_replace(buffer, "{user}", getenv("USER"));
-    str_replace(buffer, "{directory}", dir);
-    printf("%s", dir);
+        if (*format == '%')
+        {
+            format++;
+            switch (*format)
+            {
+            case 'u':
+                strcat(str, getenv("USER"));
+                position += strlen(getenv("USER"));
+                break;
 
-    return buffer;
+            case 'd':
+            {
+                char cwd[256];
+		getcwd(cwd, sizeof(cwd));
+                strcat(str, cwd);
+                str_replace(str, getenv("HOME"), "~");
+                position += strlen(cwd) - (strlen(getenv("HOME")) - 1);
+                break;
+            }
+
+            case 'h':
+            {
+                char hostname[1024];
+                gethostname(hostname, 1023);
+                strcat(str, hostname);
+                position += strlen(hostname);
+                break;
+            }
+
+            default:
+                str[position] = '%';
+                position++;
+                break;
+            }
+        }
+
+        else
+        {
+            str[position] = *format;
+            position++;
+        }
+
+        format++;
+    }
 }
 
 void make_prompt()
 {
 
-    char *command = NULL, *prompt;
+    char *command = NULL, *prompt, p_prompt[4096] = {0};
     int status;
     char hist_file[1024];
     char *temp = getenv("HOME");
@@ -242,12 +282,16 @@ void make_prompt()
     if (lisp_get_var("prompt"))
     {
         prompt = lisp_get_var("prompt");
+
+        parse_prompt(p_prompt, prompt);
     }
 
     /* Use a default prompt */
     else
     {
         prompt = "λ ";
+
+        strcpy(p_prompt, prompt);
     }
 
     do
@@ -261,6 +305,8 @@ void make_prompt()
             if (lisp_get_var("failed-prompt"))
             {
                 prompt = lisp_get_var("failed-prompt");
+                memset(p_prompt, 0, strlen(p_prompt));
+                parse_prompt(p_prompt, prompt);
             }
         }
         else
@@ -269,18 +315,22 @@ void make_prompt()
             if (lisp_get_var("prompt"))
             {
                 prompt = lisp_get_var("prompt");
+                memset(p_prompt, 0, strlen(p_prompt));
+                parse_prompt(p_prompt, prompt);
             }
 
             /* Use a default prompt */
             else
             {
+
                 prompt = "λ ";
+                strcpy(p_prompt, prompt);
             }
         }
         /* Read the next command to execute */
-        command = readline(prompt);
+        command = readline(p_prompt);
 
-        if (command && *command)
+        if (command && *command && command[0] != '(')
         {
             /* Add to history */
             add_history(command);
@@ -289,6 +339,11 @@ void make_prompt()
             status = execute_command(command);
 
             free(command);
+        }
+
+        else if (command[0] == '(')
+        {
+            scm_c_eval_string(command);
         }
 
     } while (status);
