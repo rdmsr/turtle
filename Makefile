@@ -15,13 +15,14 @@ $(TARGET): $(OBJS)
 	@$(CC) $(LDFLAGS) $(OBJS) -o $@ $(LOADLIBS) $(LDLIBS)
 
 install:
-	cp .turtlerc.scm ~
-	$(ROOT) cp turtle /usr/local/bin
-	$(ROOT) mkdir /usr/share/turtle
-	$(ROOT) cp -r lib/ /usr/share/turtle/
+	@cp .turtlerc.scm ~
+	@cp turtle ~/.local/bin
+	@mkdir -p ~/.local/share/turtle
+	@cp -r lib/ ~/.local/share/turtle
+	@echo "Installed turtle to ~/.local/bin"
 uninstall:
 	rm -rf ~/.turtle_history ~/.turtlerc.scm 
-	$(ROOT) rm -rf /usr/local/bin/turtle /usr/share/turtle 
+	rm -rf ~/.local/share/turtle ~/.local/bin/turtle
 
 .PHONY: clean
 clean:

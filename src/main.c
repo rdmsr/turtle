@@ -7,6 +7,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+char *get_lib_file(char *name)
+{
+    char file[1024];
+    char *temp = getenv("HOME");
+
+    strcpy(file, temp);
+    strcat(file, "/.local/share/turtle/lib/");
+    strcat(file, name);
+
+    char *ret = malloc(sizeof(char*) * strlen(temp));
+    strcpy(ret, file);
+
+    return ret;
+}
+
 int main(int argc, char *argv[])
 {
 
@@ -23,7 +38,7 @@ int main(int argc, char *argv[])
     if (argc == 1)
     {
 
-        scm_c_primitive_load_path("/usr/share/turtle/lib/ansicolors.scm");
+        scm_c_primitive_load_path(get_lib_file("ansicolors.scm"));
         scm_c_primitive_load(rc_file);
 
         scm_c_use_module("turtlerc");
