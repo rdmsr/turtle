@@ -1,4 +1,8 @@
-(define-module (turtlerc))
-(define-public prompt "\x1b[1;32mλ \x1b[0m")
+(define-module (turtlerc)
+  #:use-module (ansicolors)) ;; use the ansicolors module
 
-(format #t "Welcome to\x1b[1;32m turtle, \x1b[1;36m~a\x1b[0m.\nA little shell for \x1b[1;34mscheme\x1b[0m enthusiasts. \n" (getenv "USER"))
+(define-public prompt (string-concatenate (list (colorize-string "λ " 'GREEN 'BOLD) (color 'RESET)))) ;; Green lambda
+
+(define-public failed-prompt (string-concatenate (list (colorize-string "λ " 'RED 'BOLD) (color 'RESET)))) ;; Red lambda
+
+(display (string-concatenate (list "Welcome to " (color 'GREEN 'BOLD) "turtle" (color 'RESET) ", " (color 'CYAN 'BOLD) (getenv "USER") (color 'RESET) ".\nA little shell for " (color 'BLUE 'BOLD) "scheme " (color 'RESET) "enthusiasts.\n"))) ;; Welcome message

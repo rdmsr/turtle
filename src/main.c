@@ -22,9 +22,12 @@ int main(int argc, char *argv[])
 
     if (argc == 1)
     {
+
+        scm_c_primitive_load_path("/usr/share/turtle/lib/ansicolors.scm");
         scm_c_primitive_load(rc_file);
 
         scm_c_use_module("turtlerc");
+
         make_prompt();
     }
     else

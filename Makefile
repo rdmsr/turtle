@@ -17,9 +17,11 @@ $(TARGET): $(OBJS)
 install:
 	cp .turtlerc.scm ~
 	$(ROOT) cp turtle /usr/local/bin
+	$(ROOT) mkdir /usr/share/turtle
+	$(ROOT) cp -r lib/ /usr/share/turtle/
 uninstall:
-	rm -rf ~/.turtle_history ~/.turtlerc.scm
-	$(ROOT) rm -rf /usr/local/bin
+	rm -rf ~/.turtle_history ~/.turtlerc.scm 
+	$(ROOT) rm -rf /usr/local/bin/turtle /usr/share/turtle 
 
 .PHONY: clean
 clean:
