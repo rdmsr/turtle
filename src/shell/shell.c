@@ -1,4 +1,3 @@
-
 #define _DEFAULT_SOURCE
 #include <stdio.h>
 
@@ -12,10 +11,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
-
-int builtin_cd(char **args);
-int builtin_help(char **args);
-int builtin_exit(char **args);
+#include <shell/builtins.h>
 
 char *builtins[] = {
     "cd",
@@ -30,42 +26,7 @@ int num_builtins()
     return sizeof(builtins) / sizeof(char *);
 }
 
-int builtin_cd(char **args)
-{
-    if (!args[1])
-    {
-        fprintf(stderr, "turtle: expected argument to \"cd\"\n");
-    }
-    else
-    {
-        if (chdir(args[1]) != 0)
-        {
-            perror("turtle");
-        }
-    }
-    return 1;
-}
 
-int builtin_help(char **args)
-{
-    int i;
-
-    printf("List of builtins commands: \n");
-    for (i = 0; i < num_builtins(); i++)
-    {
-        printf("  %s\n", builtins[i]);
-    }
-
-    (void)(args);
-    return 1;
-}
-
-int builtin_exit(char **args)
-{
-
-    (void)(args);
-    return 0;
-}
 
 void parse_args(char *arg)
 {
@@ -186,8 +147,7 @@ void str_replace(char *target, const char *needle, const char *replacement)
     char buffer[1024] = {0};
     char *insert_point = &buffer[0];
     const char *tmp = target;
-    size_t needle_len = strlen(needle);
-    size_t repl_len = strlen(replacement);
+    size_t needle_len = strlen(needle), repl_len = strlen(replacement);
 
     while (1)
     {
