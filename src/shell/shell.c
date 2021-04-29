@@ -78,7 +78,7 @@ void parse_args(char *arg)
 
     if (strcmp(arg, "--version") == 0 || strcmp(arg, "-v") == 0)
     {
-        printf("Turtle V0.0.12\n");
+        printf("Turtle V0.0.15\n");
     }
 }
 
