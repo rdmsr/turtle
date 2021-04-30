@@ -3,6 +3,7 @@
 
 #include <readline/history.h>
 #include <readline/readline.h>
+#include <shell/builtins.h>
 #include <shell/lisp.h>
 #include <shell/shell.h>
 #include <stdbool.h>
@@ -11,7 +12,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <shell/builtins.h>
 
 char *builtins[] = {
     "cd",
@@ -25,8 +25,6 @@ int num_builtins()
 {
     return sizeof(builtins) / sizeof(char *);
 }
-
-
 
 void parse_args(char *arg)
 {
@@ -311,7 +309,12 @@ void make_prompt()
 
         else if (command[0] == '(')
         {
+            add_history(command);
             scm_c_eval_string(command);
+
+	    status = 1;
+	    
+	    free(command);
         }
 
     } while (status);
