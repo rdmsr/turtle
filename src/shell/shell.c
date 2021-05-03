@@ -293,9 +293,11 @@ void make_prompt()
                 strcpy(p_prompt, prompt);
             }
         }
+	
         /* Read the next command to execute */
         command = readline(p_prompt);
 
+	status = 1;
         if (command && *command && command[0] != '(')
         {
             /* Add to history */
