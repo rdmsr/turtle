@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int builtin_cd(char **args)
+static int builtin_cd(char **args)
 {
     if (!args[1])
     {
@@ -19,7 +19,7 @@ int builtin_cd(char **args)
     return 1;
 }
 
-int builtin_help(char **args)
+static int builtin_help(char **args)
 {
     int i;
 
@@ -33,7 +33,7 @@ int builtin_help(char **args)
     return 1;
 }
 
-int builtin_exit(char **args)
+static int builtin_exit(char **args)
 {
     int status = 0;
 
