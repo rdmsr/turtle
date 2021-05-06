@@ -1,6 +1,7 @@
-#include <shell/builtins.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <shell/builtins.h>
 
 static int builtin_cd(char **args)
 {

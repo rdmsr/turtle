@@ -1,9 +1,7 @@
-#ifndef LISP_H
-#define LISP_H
-#define inline
-#include <libguile.h>
+#ifndef TURTLE_LISP_H
+#define TURTLE_LISP_H 1
 
 char* lisp_get_var(char* name);
 
 
-#endif
+#endif /* !TURTLE_LISP_H */

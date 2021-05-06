@@ -2,7 +2,7 @@ CC ?= clang
 RM	= rm -f
 
 CFLAGS += -ansi -g -Wall -Wextra -Werror -Wno-unused-function -Isrc/ \
-			`pkg-config --cflags guile-2.2` \
+			`pkg-config --cflags guile-2.2` -Dinline="" \
 			-DTURTLE_VERSION=\"`git describe --tags --abbrev=0`\"
 LDFLAGS += -lreadline `pkg-config --libs guile-2.2`
 
