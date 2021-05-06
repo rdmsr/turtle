@@ -1,5 +1,5 @@
-#include <shell/lisp.h>
-#include <stdbool.h>
+#include <stdlib.h>
+#include <libguile.h>
 
 char *lisp_get_var(char *name)
 {

@@ -1,7 +1,6 @@
-#ifndef SHELL_H
-#define SHELL_H
-#define inline
+#ifndef TURTLE_SHELL_H
+#define TURTLE_SHELL_H 1
 
 void make_prompt();
 
-#endif
+#endif /* !TURTLE_SHELL_H */

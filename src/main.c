@@ -1,4 +1,3 @@
-#define inline
 #include <libguile.h>
 #include <readline/history.h>
 #include <readline/readline.h>

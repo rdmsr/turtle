@@ -1,7 +1,5 @@
-#ifndef BUILTINS_H
-#define BUILTINS_H
-#include <stdio.h>
-#include <unistd.h>
+#ifndef TURTLE_BUILTINS_H
+#define TURTLE_BUILTINS_H 1
 
 struct builtin
 {
@@ -11,4 +9,4 @@ struct builtin
 
 extern struct builtin builtins[];
 
-#endif
+#endif /* !TURTLE_BUILTINS_H */

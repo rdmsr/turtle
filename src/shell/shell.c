@@ -1,19 +1,18 @@
 #define _DEFAULT_SOURCE
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <stdlib.h>
 #include <stdio.h>
-
+#include <signal.h>
+#include <stdbool.h>
+#include <string.h>
+#include <unistd.h>
 #include <readline/history.h>
 #include <readline/readline.h>
+#include <libguile.h>
 #include <shell/builtins.h>
 #include <shell/lisp.h>
 #include <shell/shell.h>
-#include <signal.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
-
 
 static bool failed = false;
 
