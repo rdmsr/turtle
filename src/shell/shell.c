@@ -235,7 +235,6 @@ void make_prompt()
 {
 
     char *command = NULL, *prompt, p_prompt[4096] = {0};
-    int status;
     char hist_file[1024];
     char *temp = getenv("HOME");
 
@@ -293,31 +292,32 @@ void make_prompt()
                 strcpy(p_prompt, prompt);
             }
         }
-	
+
         /* Read the next command to execute */
         command = readline(p_prompt);
+        if (command == NULL)
+        {
+            putchar('\n');
+            continue;
+        }
 
-	status = 1;
-        if (command && *command && command[0] != '(')
+        if (command[0] != '(')
         {
             /* Add to history */
             add_history(command);
 
             /* Execute it */
-            status = execute_command(command);
+            execute_command(command);
 
             free(command);
         }
-
-        else if (command[0] == '(')
+        else
         {
             add_history(command);
             scm_c_eval_string(command);
 
-	    status = 1;
-	    
-	    free(command);
+            free(command);
         }
 
-    } while (status);
+    } while (1);
 }
