@@ -6,6 +6,7 @@
 #include <shell/builtins.h>
 #include <shell/lisp.h>
 #include <shell/shell.h>
+#include <signal.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
@@ -238,6 +239,8 @@ void make_prompt()
     int status;
     char hist_file[1024];
     char *temp = getenv("HOME");
+	
+    signal(SIGINT, make_prompt);
 
     strcpy(hist_file, temp);
     strcat(hist_file, "/.turtle_history");
