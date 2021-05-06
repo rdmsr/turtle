@@ -15,24 +15,9 @@
 #include <unistd.h>
 
 
-bool failed = false;
+static bool failed = false;
 
-void parse_args(char *arg)
-{
-    if (strcmp(arg, "--help") == 0 || strcmp(arg, "-h") == 0)
-    {
-        printf("Usage: turtle [OPTION]\n");
-        printf("-v --version: Shows the current version\n");
-        printf("-h --help: Shows this message\n");
-    }
-
-    if (strcmp(arg, "--version") == 0 || strcmp(arg, "-v") == 0)
-    {
-        printf("Turtle " TURTLE_VERSION "\n");
-    }
-}
-
-char **parse_string(char *string)
+static char **parse_string(char *string)
 {
 
     char **array = malloc(strlen(string) * sizeof(char *));
@@ -48,7 +33,7 @@ char **parse_string(char *string)
     return array;
 }
 
-int spawn_command(char *command)
+static int spawn_command(char *command)
 {
 
     char buffer[strlen(command)];
@@ -102,7 +87,7 @@ int spawn_command(char *command)
     return 1;
 }
 
-int execute_command(char *command)
+static int execute_command(char *command)
 {
 
     if (command)
@@ -131,7 +116,7 @@ int execute_command(char *command)
     return -1;
 }
 
-void str_replace(char *target, const char *needle, const char *replacement)
+static void str_replace(char *target, const char *needle, const char *replacement)
 {
     char buffer[1024] = {0};
     char *insert_point = &buffer[0];
@@ -160,7 +145,7 @@ void str_replace(char *target, const char *needle, const char *replacement)
     strcpy(target, buffer);
 }
 
-void parse_prompt(char *str, char *format)
+static void parse_prompt(char *str, char *format)
 {
 
     int position = 0;

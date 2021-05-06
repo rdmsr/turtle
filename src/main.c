@@ -6,29 +6,41 @@
 #include <shell/shell.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
-char *get_lib_file(char *name)
+static char *get_lib_file(char *name)
 {
-    char file[1024];
+    static char file[PATH_MAX];
     char *temp = getenv("HOME");
 
+    memset(file, 0, PATH_MAX);
     strcpy(file, temp);
     strcat(file, "/.local/share/turtle/lib/");
     strcat(file, name);
 
-    char *ret = malloc(sizeof(char*) * strlen(temp));
-    strcpy(ret, file);
+    return file;
+}
 
-    return ret;
+static void parse_args(char *arg)
+{
+    if (strcmp(arg, "--help") == 0 || strcmp(arg, "-h") == 0)
+    {
+        printf("Usage: turtle [OPTION]\n");
+        printf("-v --version: Shows the current version\n");
+        printf("-h --help: Shows this message\n");
+    }
+    else if (strcmp(arg, "--version") == 0 || strcmp(arg, "-v") == 0)
+    {
+        printf("Turtle " TURTLE_VERSION "\n");
+    }
 }
 
 int main(int argc, char *argv[])
 {
+    char rc_file[PATH_MAX];
+    char *temp = getenv("HOME");
 
     scm_init_guile();
-
-    char rc_file[1024];
-    char *temp = getenv("HOME");
 
     strcpy(rc_file, temp);
     strcat(rc_file, "/.turtlerc.scm");
@@ -46,7 +58,9 @@ int main(int argc, char *argv[])
         make_prompt();
     }
     else
+    {
         parse_args(argv[1]);
+    }
 
     return 0;
 }
