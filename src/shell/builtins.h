@@ -3,8 +3,12 @@
 #include <stdio.h>
 #include <unistd.h>
 
-int builtin_cd(char **args);
-int builtin_help(char **args);
-int builtin_exit(char **args);
+struct builtin
+{
+    char *cmd;
+    int (*fnc)(char **args);
+};
+
+extern struct builtin builtins[];
 
 #endif
