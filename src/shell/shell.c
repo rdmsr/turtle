@@ -238,7 +238,7 @@ void make_prompt()
     char *command = NULL, *prompt, p_prompt[4096] = {0};
     char hist_file[1024];
     char *temp = getenv("HOME");
-	
+
     signal(SIGINT, make_prompt);
 
     strcpy(hist_file, temp);
@@ -300,7 +300,12 @@ void make_prompt()
         command = readline(p_prompt);
         if (command == NULL)
         {
-            putchar('\n');
+            return; /* exit on C-d */
+        }
+
+        if (*command == '\0')
+        {
+            /* ignore blank command */
             continue;
         }
 
