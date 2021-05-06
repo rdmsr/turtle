@@ -68,7 +68,7 @@ int spawn_command(char *command)
 
     command_array = parse_string(buffer);
 
-    pid_t pid, wait_pid;
+    pid_t pid;
 
     int status = 0;
     pid = fork();
@@ -96,7 +96,7 @@ int spawn_command(char *command)
     {
         do
         {
-            wait_pid = waitpid(pid, &status, WUNTRACED);
+            waitpid(pid, &status, WUNTRACED);
         } while (!WIFEXITED(status) && !WIFSIGNALED(status));
     }
 
