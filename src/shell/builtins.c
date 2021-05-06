@@ -1,16 +1,6 @@
 #include <shell/builtins.h>
-#include <unistd.h>
 #include <stdlib.h>
-
-static char *builtins[] = {
-    "cd",
-    "help",
-    "exit"};
-
-static int num_builtins()
-{
-    return sizeof(builtins) / sizeof(char *);
-}
+#include <unistd.h>
 
 int builtin_cd(char **args)
 {
@@ -34,9 +24,9 @@ int builtin_help(char **args)
     int i;
 
     printf("List of builtins commands: \n");
-    for (i = 0; i < num_builtins(); i++)
+    for (i = 0; builtins[i].cmd != NULL; i++)
     {
-        printf("  %s\n", builtins[i]);
+        printf("  %s\n", builtins[i].cmd);
     }
 
     (void)(args);
@@ -55,3 +45,10 @@ int builtin_exit(char **args)
 
     return 0;
 }
+
+struct builtin builtins[] = {
+    {"cd", builtin_cd},
+    {"help", builtin_help},
+    {"exit", builtin_exit},
+    {NULL, NULL}
+};

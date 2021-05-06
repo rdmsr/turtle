@@ -14,18 +14,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-char *builtins[] = {
-    "cd",
-    "help",
-    "exit"};
 
 bool failed = false;
-int (*builtin_funcs[])(char **) = {&builtin_cd, &builtin_help, &builtin_exit};
-
-int num_builtins()
-{
-    return sizeof(builtins) / sizeof(char *);
-}
 
 void parse_args(char *arg)
 {
@@ -127,11 +117,11 @@ int execute_command(char *command)
 
         command_array = parse_string(buffer);
 
-        for (i = 0; i < num_builtins(); i++)
+        for (i = 0; builtins[i].cmd != NULL; i++)
         {
-            if (strcmp(command_array[0], builtins[i]) == 0)
+            if (strcmp(command_array[0], builtins[i].cmd) == 0)
             {
-                return (*builtin_funcs[i])(command_array);
+                return builtins[i].fnc(command_array);
             }
         }
 
