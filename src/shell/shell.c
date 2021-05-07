@@ -3,7 +3,6 @@
 #include <sys/wait.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <signal.h>
 #include <stdbool.h>
 #include <string.h>
 #include <unistd.h>
@@ -212,8 +211,6 @@ void make_prompt()
     char *command = NULL, *prompt, p_prompt[4096] = {0};
     char hist_file[1024];
     char *temp = getenv("HOME");
-
-    signal(SIGINT, make_prompt);
 
     strcpy(hist_file, temp);
     strcat(hist_file, "/.turtle_history");

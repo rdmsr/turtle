@@ -6,18 +6,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <signal.h>
 
 static char *get_lib_file(char *name)
 {
-    static char file[PATH_MAX];
-    char *temp = getenv("HOME");
+    static char file_path[PATH_MAX];
+    char *home_path;
 
-    memset(file, 0, PATH_MAX);
-    strcpy(file, temp);
-    strcat(file, "/.local/share/turtle/lib/");
-    strcat(file, name);
+    memset(file_path, 0, PATH_MAX);
+    home_path = getenv("HOME");
+    if (home_path)
+    {
+        strcpy(file_path, home_path);
+        strcat(file_path, "/");
+    }
+    strcat(file_path, ".local/share/turtle/lib/");
+    strcat(file_path, name);
 
-    return file;
+    return file_path;
 }
 
 static void parse_args(char *arg)
@@ -36,13 +42,20 @@ static void parse_args(char *arg)
 
 int main(int argc, char *argv[])
 {
-    char rc_file[PATH_MAX];
-    char *temp = getenv("HOME");
+    char rc_file[PATH_MAX] = {'\0'};
+    char *home_path;
+
+    signal(SIGINT, make_prompt);
 
     scm_init_guile();
 
-    strcpy(rc_file, temp);
-    strcat(rc_file, "/.turtlerc.scm");
+    home_path = getenv("HOME");
+    if (home_path)
+    {
+        strcpy(rc_file, home_path);
+        strcat(rc_file, "/");
+    }
+    strcat(rc_file, ".turtlerc.scm");
 
     using_history();
 
