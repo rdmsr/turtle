@@ -1,6 +1,6 @@
 #ifndef TURTLE_SHELL_H
 #define TURTLE_SHELL_H 1
 
-void make_prompt();
+void shell_loop();
 
 #endif /* !TURTLE_SHELL_H */
