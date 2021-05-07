@@ -1,35 +1,18 @@
-#define _DEFAULT_SOURCE
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdbool.h>
-#include <string.h>
-#include <unistd.h>
+#include <libguile.h>
 #include <readline/history.h>
 #include <readline/readline.h>
-#include <libguile.h>
 #include <shell/builtins.h>
 #include <shell/lisp.h>
+#include <shell/prompt.h>
 #include <shell/shell.h>
-
-static bool failed = false;
-
-static char **parse_string(char *string)
-{
-
-    char **array = malloc(strlen(string) * sizeof(char *));
-    int i = 0;
-
-    array[i] = strtok(string, " \t\r\n\a");
-
-    while (array[i])
-    {
-        array[++i] = strtok(NULL, " \t\r\n\a");
-    }
-
-    return array;
-}
+#include <shell/str.h>
+#include <shell/path.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 static int spawn_command(char *command)
 {
@@ -74,15 +57,7 @@ static int spawn_command(char *command)
         } while (!WIFEXITED(status) && !WIFSIGNALED(status));
     }
 
-    if (status > 0)
-    {
-        failed = true;
-    }
-
-    else
-        failed = false;
-
-    return 1;
+    return status;
 }
 
 static int execute_command(char *command)
@@ -114,161 +89,20 @@ static int execute_command(char *command)
     return -1;
 }
 
-static void str_replace(char *target, const char *needle, const char *replacement)
+void shell_loop(void)
 {
-    char buffer[1024] = {0};
-    char *insert_point = &buffer[0];
-    const char *tmp = target;
-    size_t needle_len = strlen(needle), repl_len = strlen(replacement);
-
-    while (1)
-    {
-        const char *p = strstr(tmp, needle);
-
-        if (p == NULL)
-        {
-            strcpy(insert_point, tmp);
-            break;
-        }
-
-        memcpy(insert_point, tmp, p - tmp);
-        insert_point += p - tmp;
-
-        memcpy(insert_point, replacement, repl_len);
-        insert_point += repl_len;
-
-        tmp = p + needle_len;
-    }
-
-    strcpy(target, buffer);
-}
-
-static void parse_prompt(char *str, char *format)
-{
-
-    int position = 0;
-
-    while (*format)
-    {
-
-        if (*format == '%')
-        {
-            format++;
-            switch (*format)
-            {
-            case 'u':
-                strcat(str, getenv("USER"));
-                position += strlen(getenv("USER"));
-                break;
-
-            case 'd':
-            {
-                char cwd[256];
-                getcwd(cwd, sizeof(cwd));
-                strcat(str, cwd);
-
-                if (strstr(str, getenv("HOME")))
-                {
-
-                    str_replace(str, getenv("HOME"), "~");
-                    position += strlen(cwd) - (strlen(getenv("HOME")) - 1);
-                }
-                else
-                    position += strlen(cwd);
-
-                break;
-            }
-
-            case 'h':
-            {
-                char hostname[1024];
-                gethostname(hostname, 1023);
-                strcat(str, hostname);
-                position += strlen(hostname);
-                break;
-            }
-
-            default:
-                str[position] = '%';
-                position++;
-                break;
-            }
-        }
-
-        else
-        {
-            str[position] = *format;
-            position++;
-        }
-
-        format++;
-    }
-}
-
-void make_prompt()
-{
-
-    char *command = NULL, *prompt, p_prompt[4096] = {0};
-    char hist_file[1024];
-    char *temp = getenv("HOME");
-
-    strcpy(hist_file, temp);
-    strcat(hist_file, "/.turtle_history");
-
-    read_history(hist_file);
-
-    /* Take the scheme prompt variable if set */
-    if (lisp_get_var("prompt"))
-    {
-        prompt = lisp_get_var("prompt");
-
-        parse_prompt(p_prompt, prompt);
-    }
-
-    /* Use a default prompt */
-    else
-    {
-        prompt = "λ ";
-
-        strcpy(p_prompt, prompt);
-    }
+    int ret_status = 0;
+    char *command = NULL;
 
     do
     {
-
-        if (write_history(hist_file) != 0)
+        if (write_history(path_from_home(".turtle_history")) != 0)
+        {
             perror("turtle");
-
-        if (failed)
-        {
-            if (lisp_get_var("failed-prompt"))
-            {
-                prompt = lisp_get_var("failed-prompt");
-                memset(p_prompt, 0, strlen(p_prompt));
-                parse_prompt(p_prompt, prompt);
-            }
-        }
-        else
-        {
-            /* Take the scheme prompt variable if set */
-            if (lisp_get_var("prompt"))
-            {
-                prompt = lisp_get_var("prompt");
-                memset(p_prompt, 0, strlen(p_prompt));
-                parse_prompt(p_prompt, prompt);
-            }
-
-            /* Use a default prompt */
-            else
-            {
-
-                prompt = "λ ";
-                strcpy(p_prompt, prompt);
-            }
         }
 
         /* Read the next command to execute */
-        command = readline(p_prompt);
+        command = readline(prompt(ret_status));
         if (command == NULL)
         {
             return; /* exit on C-d */
@@ -286,7 +120,7 @@ void make_prompt()
             add_history(command);
 
             /* Execute it */
-            execute_command(command);
+            ret_status = execute_command(command);
 
             free(command);
         }

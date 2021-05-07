@@ -15,12 +15,13 @@ static int builtin_cd(char **args)
         if (chdir(args[1]) != 0)
         {
             perror("turtle");
+            return 1;
         }
     }
-    return 1;
+    return 0;
 }
 
-static int builtin_help(char **args)
+static int builtin_help()
 {
     int i;
 
@@ -29,9 +30,7 @@ static int builtin_help(char **args)
     {
         printf("  %s\n", builtins[i].cmd);
     }
-
-    (void)(args);
-    return 1;
+    return 0;
 }
 
 static int builtin_exit(char **args)

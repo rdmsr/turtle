@@ -3,28 +3,11 @@
 #include <readline/readline.h>
 #include <shell/lisp.h>
 #include <shell/shell.h>
+#include <shell/path.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <signal.h>
-
-static char *get_lib_file(char *name)
-{
-    static char file_path[PATH_MAX];
-    char *home_path;
-
-    memset(file_path, 0, PATH_MAX);
-    home_path = getenv("HOME");
-    if (home_path)
-    {
-        strcpy(file_path, home_path);
-        strcat(file_path, "/");
-    }
-    strcat(file_path, ".local/share/turtle/lib/");
-    strcat(file_path, name);
-
-    return file_path;
-}
 
 static void parse_args(char *arg)
 {
@@ -42,32 +25,22 @@ static void parse_args(char *arg)
 
 int main(int argc, char *argv[])
 {
-    char rc_file[PATH_MAX] = {'\0'};
-    char *home_path;
-
-    signal(SIGINT, make_prompt);
+    signal(SIGINT, shell_loop);
 
     scm_init_guile();
-
-    home_path = getenv("HOME");
-    if (home_path)
-    {
-        strcpy(rc_file, home_path);
-        strcat(rc_file, "/");
-    }
-    strcat(rc_file, ".turtlerc.scm");
 
     using_history();
 
     if (argc == 1)
     {
-
-        scm_c_primitive_load_path(get_lib_file("ansicolors.scm"));
-        scm_c_primitive_load(rc_file);
+        scm_c_primitive_load_path(path_from_turtle_lib("ansicolors.scm"));
+        scm_c_primitive_load(path_from_home(".turtlerc.scm"));
 
         scm_c_use_module("turtlerc");
 
-        make_prompt();
+        read_history(path_from_home(".turtle_history"));
+
+        shell_loop();
     }
     else
     {
