@@ -16,18 +16,13 @@
 
 static int spawn_command(char *command)
 {
-
-    char buffer[strlen(command)];
-
-    strcpy(buffer, command);
-
-    char **command_array = NULL;
-
-    command_array = parse_string(buffer);
-
+    char **command_array;
     pid_t pid;
+    int status;
 
-    int status = 0;
+    command_array = parse_string(command);
+
+    status = 0;
     pid = fork();
 
     /* Child process */
@@ -36,19 +31,15 @@ static int spawn_command(char *command)
 
         if (execvp(command_array[0], command_array) == -1)
         {
-
             perror("turtle");
         }
-
         exit(EXIT_FAILURE);
     }
-
     else if (pid < 0)
     {
         /* Error forking */
         perror("turtle");
     }
-
     else
     {
         do
@@ -62,18 +53,12 @@ static int spawn_command(char *command)
 
 static int execute_command(char *command)
 {
+    int i;
+    char **command_array;
 
     if (command)
     {
-        int i;
-
-        char buffer[strlen(command)];
-
-        strcpy(buffer, command);
-
-        char **command_array = NULL;
-
-        command_array = parse_string(buffer);
+        command_array = parse_string(command);
 
         for (i = 0; builtins[i].cmd != NULL; i++)
         {
