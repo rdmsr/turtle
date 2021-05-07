@@ -14,17 +14,13 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-static int spawn_command(char *command)
+static int spawn_command(char **command_array)
 {
-    char **command_array;
     pid_t pid;
     int status;
 
-    command_array = parse_string(command);
-
     status = 0;
     pid = fork();
-
     /* Child process */
     if (pid == 0)
     {
@@ -54,8 +50,10 @@ static int spawn_command(char *command)
 static int execute_command(char *command)
 {
     int i;
-    char **command_array;
+    int ret_status;
+    char **command_array = NULL;
 
+    ret_status = -1;
     if (command)
     {
         command_array = parse_string(command);
@@ -64,14 +62,17 @@ static int execute_command(char *command)
         {
             if (strcmp(command_array[0], builtins[i].cmd) == 0)
             {
-                return builtins[i].fnc(command_array);
+                ret_status = builtins[i].fnc(command_array);
+                free(command_array);
+                return ret_status;
             }
         }
 
-        return spawn_command(command);
+        ret_status = spawn_command(command_array);
+        free(command_array);
     }
 
-    return -1;
+    return ret_status;
 }
 
 void shell_loop(void)
