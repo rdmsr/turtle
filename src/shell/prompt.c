@@ -1,9 +1,9 @@
 #define _DEFAULT_SOURCE
+#include <shell/lisp.h>
+#include <shell/str.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <shell/str.h>
-#include <shell/lisp.h>
 
 static void prompt_parse(char *str, char *format)
 {
@@ -68,10 +68,12 @@ static void prompt_parse(char *str, char *format)
 
 char *prompt(int status)
 {
+
     static char p_prompt[4096];
     char *prompt = NULL;
 
     memset(p_prompt, '\0', 4096);
+
     /* Take the scheme prompt variable if set */
     if (lisp_get_var("prompt"))
     {

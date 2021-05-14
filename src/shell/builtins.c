@@ -1,7 +1,9 @@
+#include <shell/builtins.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <shell/builtins.h>
+#include <libguile.h>
+#include <shell/path.h>
 
 static int builtin_cd(char **args)
 {
@@ -18,6 +20,8 @@ static int builtin_cd(char **args)
             return 1;
         }
     }
+
+    scm_c_primitive_load(path_from_home(".turtlerc.scm"));
     return 0;
 }
 
@@ -50,5 +54,4 @@ struct builtin builtins[] = {
     {"cd", builtin_cd},
     {"help", builtin_help},
     {"exit", builtin_exit},
-    {NULL, NULL}
-};
+    {NULL, NULL}};

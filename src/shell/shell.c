@@ -89,6 +89,7 @@ void shell_loop(void)
 
         /* Read the next command to execute */
         command = readline(prompt(ret_status));
+	
         if (command == NULL)
         {
             return; /* exit on C-d */
@@ -117,6 +118,7 @@ void shell_loop(void)
 
             free(command);
         }
+	
 
     } while (1);
 }

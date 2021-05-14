@@ -1,7 +1,7 @@
 ;; Reimplementation of https://github.com/rotty/guile-lib/blob/master/src/term/ansi-color.scm
 ;; Thanks to them
 
-(define-module (ansicolors)
+(define-module (turtle ansicolors)
      #:export  (color
                 colorize-string)
      #:use-module (srfi srfi-1)

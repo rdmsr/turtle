@@ -34,6 +34,8 @@ int main(int argc, char *argv[])
     if (argc == 1)
     {
         scm_c_primitive_load_path(path_from_turtle_lib("ansicolors.scm"));
+        scm_c_primitive_load_path(path_from_turtle_lib("painted-prompt.scm"));
+	
         scm_c_primitive_load(path_from_home(".turtlerc.scm"));
 
         scm_c_use_module("turtlerc");
