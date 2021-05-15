@@ -14,5 +14,5 @@ Then run `make && make install`
 soon :tm:
 ## Gallery
 
-![image](https://cdn.discordapp.com/attachments/732514859857739847/837346979779575898/unknown.png)
+![image](https://abbix.me/i/turtle.gif)
 

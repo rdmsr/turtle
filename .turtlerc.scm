@@ -4,7 +4,7 @@
 
 (define git-module (lambda () (if (not (equal? (prompt-git-branch) "" ))	  ; If is in git repo
 				  (colorize-string (string-concatenate (list "on שׂ " (prompt-git-branch) "\n")) 'YELLOW 'BOLD) ; return branch
-				  ""))) ; else, return nothing
+				  git-branch-default))) ; else, return git-branch-default (by default it is "")
 
 (define user-module (lambda () (colorize-string (prompt-user) 'BLUE 'BOLD))) ; Username
 (define dir-module (lambda () (colorize-string (prompt-dir) 'CYAN 'BOLD))) ; Current dir
