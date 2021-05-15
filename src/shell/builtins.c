@@ -21,7 +21,6 @@ static int builtin_cd(char **args)
         }
     }
 
-    scm_c_primitive_load(path_from_home(".turtlerc.scm"));
     return 0;
 }
 

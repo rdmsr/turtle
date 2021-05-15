@@ -3,12 +3,10 @@
 #include <readline/readline.h>
 #include <shell/builtins.h>
 #include <shell/lisp.h>
-#include <shell/prompt.h>
+#include <shell/path.h>
 #include <shell/shell.h>
 #include <shell/str.h>
-#include <shell/path.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -80,6 +78,8 @@ void shell_loop(void)
     int ret_status = 0;
     char *command = NULL;
 
+    char str_status[10] = {0};
+
     do
     {
         if (write_history(path_from_home(".turtle_history")) != 0)
@@ -87,8 +87,12 @@ void shell_loop(void)
             perror("turtle");
         }
 
+        sprintf(str_status, "%d", ret_status);
+	
         /* Read the next command to execute */
-        command = readline(prompt(ret_status));
+        command = readline(lisp_call_func("prompt", str_status));
+
+	memset(str_status,0,sizeof(str_status));
 	
         if (command == NULL)
         {
@@ -118,7 +122,6 @@ void shell_loop(void)
 
             free(command);
         }
-	
 
     } while (1);
 }
