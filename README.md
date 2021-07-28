@@ -9,13 +9,6 @@ You need guile and readline for this shell to work.
 
 Then run `make && make install`
 
-## Test
-```c
-int main()
-{
-return 0;
-}
-```
 ## Documentation
 A wiki is available [here](https://github.com/Abb1x/turtle/wiki)
 
